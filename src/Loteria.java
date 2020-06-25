@@ -6,10 +6,10 @@ public class Loteria {
     private static int[] vetorDeTentativasDoUsuario = new int[6];
 
     public static void main(String[] args) {
-        calcularChancesDeGanhar();
-        sortearNumeros();
+        calcularChancesDeGanhar(6, 60);
         obterEArmazenarTentativasDoUsuario();
-        calcularEImprimirResultado();
+        realizarSorteio();
+        calcularEExibirResultadoDoJogo();
     }
 
     private static void obterEArmazenarTentativasDoUsuario() {
@@ -31,7 +31,7 @@ public class Loteria {
             vetorDeTentativasDoUsuario[posicaoDaTentativa] = Integer.parseInt(numeroDigitadoPeloUsuario);
             posicaoDaTentativa++;
         }
-        System.out.println("Jogo realizado com sucesso!\nSerá que você acertou algum?\nVamos ver os resultados.");
+        System.out.println("Jogo realizado com sucesso!\nSerá que você acertou algum?");
     }
 
     private static boolean numeroExiste(int[] vetorAVerificar, int numero) {
@@ -43,21 +43,23 @@ public class Loteria {
         return false;
     }
 
-    private static void calcularChancesDeGanhar() {
-        long numeroChances = 60;
-        long fatorial = numeroChances;
-        int quantidadeNaCombinacao = 6;
-        int fatorialDaCombinacao = 720;
-        for (int controladorDeLoop = 1; controladorDeLoop < quantidadeNaCombinacao; controladorDeLoop++) {
-            fatorial -= 1;
-            numeroChances *= fatorial;
-        }
-        numeroChances /= fatorialDaCombinacao;
-        System.out.println("Sua chance de ganhar é de 1 em " + numeroChances);
+    private static void calcularChancesDeGanhar(int numeroDeBolasNoJogo, int numerosDoJogo) {
+        long numeroDeChances = calcularCombinacoes(numerosDoJogo, numeroDeBolasNoJogo);
+        long fatorialDeBolasNoJogo = calcularCombinacoes(numeroDeBolasNoJogo, numeroDeBolasNoJogo);
+        numeroDeChances /= fatorialDeBolasNoJogo;
+        System.out.println("Sua chance de ganhar é de 1 em " + numeroDeChances);
     }
 
-    private static void sortearNumeros() {
-        System.out.println("Sorteando números...");
+    private static long calcularCombinacoes(long numeroACalcular, long limiteDaMultiplicacao) {
+        long antecessor = numeroACalcular;
+        for (int controladorDeLoop = 1; controladorDeLoop < limiteDaMultiplicacao; controladorDeLoop++) {
+            antecessor -= 1;
+            numeroACalcular *= antecessor;
+        }
+        return numeroACalcular;
+    }
+
+    private static void realizarSorteio() {
         Random random = new Random();
         int numeroSorteado;
         int posicaoDoNumeroSorteado = 0;
@@ -67,18 +69,25 @@ public class Loteria {
                 continue;
             }
             vetorDeNumerosSorteados[posicaoDoNumeroSorteado] = numeroSorteado;
-            System.out.println(vetorDeNumerosSorteados[posicaoDoNumeroSorteado]);
             posicaoDoNumeroSorteado++;
         }
     }
 
-    private static void calcularEImprimirResultado() {
+    private static void exibirNumerosSorteados() {
+        System.out.println("Os números sorteados foram:");
+        for (int posicaoDoNumeroSorteado = 0; posicaoDoNumeroSorteado < vetorDeNumerosSorteados.length; posicaoDoNumeroSorteado++) {
+            System.out.println(vetorDeNumerosSorteados[posicaoDoNumeroSorteado]);
+        }
+    }
+
+    private static void calcularEExibirResultadoDoJogo() {
         int numeroDeAcertos = 0;
         for (int posicaoDoNumeroQueOUsuarioDigitou = 0; posicaoDoNumeroQueOUsuarioDigitou < vetorDeTentativasDoUsuario.length; posicaoDoNumeroQueOUsuarioDigitou++) {
             if (numeroExiste(vetorDeNumerosSorteados, vetorDeTentativasDoUsuario[posicaoDoNumeroQueOUsuarioDigitou])) {
                 numeroDeAcertos++;
             }
         }
+        exibirNumerosSorteados();
         System.out.println("Você acertou " + numeroDeAcertos + " números do jogo.");
     }
 
